@@ -1,8 +1,20 @@
 #!/usr/bin/python3
 
 from flask import Flask, request, jsonify
+import subprocess
 
 app = Flask(__name__)
+
+def kill(pid):
+    os.kill(pid,signal.SIGTERM ) #SIGKILL , SIGTERM
+
+def start_proc(command: str, package_name : str, launch_file: str) -> subprocess:
+    proc = subprocess.Popen([
+        command, 
+        package_name,
+        launch_file,
+    ])
+    return proc
 
 @app.route('/save_rosbag', methods=['POST'])
 def save_rosbag():
