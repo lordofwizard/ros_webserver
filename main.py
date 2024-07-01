@@ -24,11 +24,10 @@ def start_proc(command: str, package_name: str, launch_file: str) -> subprocess.
     ])
     return proc
 
-@app.post("/save_rosbag")
-async def save_rosbag(name: str = Form(...)):
-    if not name:
-        return JSONResponse(content={'error': 'Name is required'}, status_code=400)
-    return JSONResponse(content={'message': f'Name received: {name}'}, status_code=200)
+@app.get("/save_rosbag")
+async def save_rosbag():
+    ROSBAG = start_proc("roslaunch", "rosbag", "rosbag.launch")
+    return JSONResponse(content={'message': "RosBag Save Starting" }, status_code=200)
 
 @app.post("/rosbag_play")
 async def rosbag_play(file_name: str = Form(...), speed: str = Form(...)):
