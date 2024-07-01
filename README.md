@@ -87,5 +87,5 @@ pyenv activate fastapi-env
 Now you can work on your FastAPI project within the isolated virtual environment. To run your FastAPI application, use:
 
 ```bash
-uvicorn main:app --reload
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
