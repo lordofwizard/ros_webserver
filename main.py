@@ -29,6 +29,13 @@ async def save_rosbag():
     ROSBAG = start_proc("roslaunch", "rosbag", "rosbag.launch")
     return JSONResponse(content={'message': "RosBag Save Starting" }, status_code=200)
 
+
+@app.get("/stop_rosbag")
+async def stop_rosbag():
+    global ROSBAG
+    kill(ROSBAG.pid)
+    return JSONResponse(content={'message': "Killed ROSBAG Thing" }, status_code=200)
+
 @app.post("/rosbag_play")
 async def rosbag_play(file_name: str = Form(...), speed: str = Form(...)):
     if not file_name:
@@ -47,6 +54,13 @@ async def start_tcp():
         STARTTCP = start_proc("roslaunch", "ros_tcp_endpoint", "endpoint.launch")
     return JSONResponse(content={'message': 'Starting TCP'}, status_code=200)
 
+@app.get("/stop_tcp")
+async def stop_tcp():
+    global STARTTCP
+    kill(STARTTCP.pid)
+    return JSONResponse(content={'message': 'Killed TCP'}, status_code=200)
+
+
 @app.get("/usb_cam")
 async def usb_cam():
     global USBCAM
@@ -56,6 +70,16 @@ async def usb_cam():
     else:
         USBCAM = start_proc("roslaunch", "usb_cam", "2_usb_cam.launch")
     return JSONResponse(content={'message': 'Starting USB Cam'}, status_code=200)
+
+
+@app.get("/stop_usb_cam")
+async def stop_usb_cam():
+    global USBCAM
+    if USBCAM is not None:
+        kill(USBCAM.pid)
+    else:
+        kill(USBCAM.pid)
+    return JSONResponse(content={'message': 'Killing USB Cam'}, status_code=200)
 
 @app.get("/robot_bringup")
 async def robot_bringup():
