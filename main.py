@@ -13,6 +13,7 @@ STARTTCP = None
 USBCAM = None
 ROSBAG = None
 ROSBAG_RECORD = None
+
 def kill(pid):
     os.kill(pid, signal.SIGTERM)  # SIGKILL , SIGTERM
 
@@ -23,6 +24,15 @@ def start_proc(command: str, package_name: str, launch_file: str) -> subprocess.
         launch_file,
     ])
     return proc
+
+def check_or_create_bags_directory():
+    directory = "bags"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        print(f"Directory for Bags already '{directory}' created.")
+    else:
+        print(f"Directory for Bags already '{directory}' already exists.")
+
 
 @app.get("/save_rosbag")
 async def save_rosbag():
@@ -108,6 +118,8 @@ async def stop_rosbag_record():
         kill(ROSBAG_RECORD.pid)
         ROSBAG_RECORD = None
     else:
+        if ROSBAG_RECORD == None:   
+            return JSONResponse(content={'message': 'Stopped RosBag Record'}, status_code=200)
         kill(ROSBAG_RECORD.pid)
     return JSONResponse(content={'message': 'Stopped RosBag Record'}, status_code=200)
 
