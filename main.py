@@ -34,6 +34,21 @@ def check_or_create_bags_directory():
     else:
         print(f"Directory for Bags already '{directory}' already exists.")
 
+def kill_roslaunch_processes():
+    try:
+        ps_output = subprocess.check_output(['ps', 'aux'])
+        ps_output = ps_output.decode('utf-8')
+        processes = [line for line in ps_output.split('\n') if 'roslaunch' in line]
+        for process in processes:
+            if process:
+                pid = int(process.split()[1])
+                subprocess.run(['kill', '-9', str(pid)])
+                print(f"Killed process with PID {pid}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error running command: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 
 @app.post("/rosbag_play")
 async def rosbag_play(file_name: str = Form(...), speed: str = Form(...)):
@@ -97,6 +112,7 @@ async def robot_bringup():
 async def stop_bringup():
     global BRINGUP
     if BRINGUP is not None:
+        kill_roslaunch_processes()
         kill(BRINGUP.pid)
         BRINGUP = None
     else:
