@@ -20,7 +20,7 @@ def kill(pid):
 def start_proc(command: str, package_name: str, launch_file: str) -> subprocess.Popen:
     proc = subprocess.Popen([
         "source",
-        " /opt/ros/neotic/setup.bash",
+        '/opt/ros/noetic/setup.bash',
         "&&",
         command,
         package_name,
