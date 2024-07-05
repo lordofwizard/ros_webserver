@@ -65,6 +65,16 @@ async def rosbag_play(file_name: str = Form(...), speed: Optional[int] = Form(No
         return JSONResponse(content={'message': 'rosbag play started'}, status_code=200)
     return JSONResponse(content={'message': 'Name received:'}, status_code=200)
 
+@app.get("/stop_rosbag_play")
+async def stop_rosbag_play():
+    global ROSBAG
+    if ROSBAG is not None:
+        kill(ROSBAG.pid)
+    else:
+        return JSONResponse(content={'message': 'No rosbag simulation found'}, status_code=404)
+    ROSBAG = None
+    return JSONResponse(content={'message': 'Stopped rosbag simulation'}, status_code=200)
+
 @app.get("/start_tcp")
 async def start_tcp():
     global STARTTCP
