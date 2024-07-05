@@ -61,11 +61,11 @@ async def rosbag_play(file_name: str = Form(...), speed: Optional[int] = Form(No
         return JSONResponse(content={'error': 'already Rosbag Simulation Running'}, status_code=409)
     elif speed is not None and ROSCORE is None:
         ROSCORE = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && roscore"],shell=True, executable="/bin/bash")
-        ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play {file_name} -r {speed}"],shell=True, executable="/bin/bash")
+        ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play ./bags/{file_name} -r {speed}"],shell=True, executable="/bin/bash")
         return JSONResponse(content={'message': f'rosbag play started with rate={speed}:'}, status_code=200)
     if ROSCORE is None:
         ROSCORE = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && roscore"],shell=True, executable="/bin/bash")
-        ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play {file_name}"],shell=True, executable="/bin/bash")
+        ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play ./bags/{file_name}"],shell=True, executable="/bin/bash")
         return JSONResponse(content={'message': 'rosbag play started'}, status_code=200)
     return JSONResponse(content={'message': 'Name received:'}, status_code=200)
 
