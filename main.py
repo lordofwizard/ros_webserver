@@ -60,7 +60,7 @@ async def rosbag_play(file_name: str = Form(...), speed: Optional[int] = Form(No
         return JSONResponse(content={'error': 'Filename is required'}, status_code=400)
     if ROSBAG is not None:
         return JSONResponse(content={'error': 'already Rosbag Simulation Running'}, status_code=409)
-    if !os.path.exists("./bags/"+file_name):
+    if os.path.exists("./bags/"+file_name) == False:
         return JSONResponse(content={'error': f'{file_name} file not found"}, status_code=404)
 
     elif speed is not None and ROSCORE is None:
