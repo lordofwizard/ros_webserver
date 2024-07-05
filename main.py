@@ -57,7 +57,7 @@ async def rosbag_play(file_name: str = Form(...), speed: Optional[int] = Form(No
         return JSONResponse(content={'error': 'Filename is required'}, status_code=400)
     if ROSBAG is not None:
         return JSONResponse(content={'error': 'already Rosbag Simulation Running'}, status_code=409)
-    elif speed not None:
+    elif speed is not None:
         ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play {file_name} -r {speed}"],shell=True, executable="/bin/bash")
         return JSONResponse(content={'message': f'rosbag play started with rate={speed}:'}, status_code=200)
     else:
