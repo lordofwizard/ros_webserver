@@ -85,7 +85,7 @@ async def usb_cam():
         kill(USBCAM.pid)
         USBCAM = start_proc("roslaunch", "usb_cam", "2_usb_cam.launch")
     else:
-        USBCAM = start_proc("roslaunch", "usb_cam", "2_usb_cam.launch")
+        return JSONResponse(content={'message':'No Camera Process found'}, status_code=404)
     return JSONResponse(content={'message': 'Starting USB Cam'}, status_code=200)
 
 
@@ -95,6 +95,8 @@ async def stop_usb_cam():
     if USBCAM is not None:
         kill(USBCAM.pid)
         USBCAM = None
+    else:
+        return JSONResponse(content={'message':'No Camera Process found'}, status_code=404)
     return JSONResponse(content={'message': 'Killing USB Cam'}, status_code=200)
 
 @app.get("/robot_bringup")
@@ -126,6 +128,8 @@ async def start_rosbag_record(file_name: str = Form(...)):
     global ROSBAG_RECORD
     if not file_name:
         return JSONResponse(content={'error': 'Filename is required'}, status_code=400)
+    if os.path.exists("./bags/"+file_name):
+        return JSONResponse(content={'error': 'File already present'}, status_code=409)
     if ROSBAG_RECORD is not None:
         kill(ROSBAG_RECORD.pid)
         ROSBAG_RECORD = subprocess.Popen([
@@ -151,10 +155,10 @@ async def stop_rosbag_record():
 async def rosbag_list():
     directory = "bags"
     if not os.path.exists(directory):
-        return JSONResponse(content=json.dumps({"state": "absent-dir"}), status_code = 200)
+        return JSONResponse(content=json.dumps({"state": "absent-dir"}), status_code = 404)
     files = os.listdir(directory)
     if not files:
-        return JSONResponse(content=json.dumps({"state": "empty"}), status_code = 200)
+        return JSONResponse(content=json.dumps({"state": "empty"}), status_code = 404)
     return JSONResponse(content={"state": "present", "files": files}, status_code = 200)
 
 if __name__ == '__main__':
