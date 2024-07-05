@@ -14,7 +14,6 @@ STARTTCP = None
 USBCAM = None
 ROSBAG = None
 ROSBAG_RECORD = None
-ROSCORE = None
 
 def kill(pid):
     os.kill(pid, signal.SIGTERM)
@@ -54,7 +53,7 @@ def kill_roslaunch_processes():
 
 @app.post("/rosbag_play")
 async def rosbag_play(file_name: str = Form(...), speed: Optional[int] = Form(None)):
-    global ROSBAG,ROSCORE
+    global ROSBAG
 
     if not file_name:
         return JSONResponse(content={'error': 'Filename is required'}, status_code=400)
@@ -63,12 +62,8 @@ async def rosbag_play(file_name: str = Form(...), speed: Optional[int] = Form(No
     if os.path.exists("./bags/"+file_name+".bag") == False:
         return JSONResponse(content={'error': f'{file_name}.bag file not found'}, status_code=404)
     elif speed is not None:
-        #ROSCORE = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && roscore"],shell=True, executable="/bin/bash")
         ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play ./bags/{file_name}.bag -r {speed}"],shell=True, executable="/bin/bash")
         return JSONResponse(content={'message': f'rosbag play started with rate={speed}:'}, status_code=200)
-        #if ROSCORE is None:
-        #ROSCORE = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && roscore"],shell=True, executable="/bin/bash")
-        #ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play ./bags/{file_name}"],shell=True, executable="/bin/bash")
     else:
         ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play ./bags/{file_name}.bag"],shell=True, executable="/bin/bash")
         return JSONResponse(content={'message': 'rosbag play started'}, status_code=200)
@@ -76,14 +71,12 @@ async def rosbag_play(file_name: str = Form(...), speed: Optional[int] = Form(No
 
 @app.get("/stop_rosbag_play")
 async def stop_rosbag_play():
-    global ROSBAG,ROSCORE
-    if ROSBAG is not None:# and ROSCORE is not None:
-        #kill(ROSCORE.pid)
+    global ROSBAG
+    if ROSBAG is not None:
         kill(ROSBAG.pid)
     else:
         return JSONResponse(content={'message': 'No rosbag simulation found'}, status_code=404)
     ROSBAG = None
-    #ROSCORE= None
     return JSONResponse(content={'message': 'Stopped rosbag simulation'}, status_code=200)
 
 @app.get("/start_tcp")
