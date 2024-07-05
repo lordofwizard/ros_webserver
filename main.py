@@ -38,7 +38,7 @@ def kill_roslaunch_processes():
     try:
         ps_output = subprocess.check_output(['ps', 'aux'])
         ps_output = ps_output.decode('utf-8')
-        processes = [line for line in ps_output.split('\n') if 'roslaunch' in line]
+        processes = [line for line in ps_output.split('\n') if 'ros' in line]
         for process in processes:
             if process:
                 pid = int(process.split()[1])
