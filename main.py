@@ -127,13 +127,14 @@ async def start_rosbag_record(file_name: str = Form(...)):
     global ROSBAG_RECORD
     if not file_name:
         return JSONResponse(content={'error': 'Filename is required'}, status_code=400)
-    if os.path.exists("./bags/"+file_name):
+    if os.path.exists("./bags/"+file_name+".bag"):
         return JSONResponse(content={'error': 'File already present'}, status_code=409)
     if ROSBAG_RECORD is not None:
-        kill(ROSBAG_RECORD.pid)
-        ROSBAG_RECORD = subprocess.Popen([
-            f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag record -a -O ./bags/{file_name}.bag"
-        ],shell=True, executable="/bin/bash")
+        #kill(ROSBAG_RECORD.pid)
+        #ROSBAG_RECORD = subprocess.Popen([
+        #    f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag record -a -O ./bags/{file_name}.bag"
+        #],shell=True, executable="/bin/bash")
+        return JSONResponse(content={'error': 'Recording Already Running'}, status_code=409)
     else:
         ROSBAG_RECORD = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag record -a -O ./bags/{file_name}.bag"],shell=True, executable="/bin/bash")
     return JSONResponse(content={'message': 'Starting RosBag Record'}, status_code=200)
@@ -145,9 +146,7 @@ async def stop_rosbag_record():
         kill(ROSBAG_RECORD.pid)
         ROSBAG_RECORD = None
     else:
-        if ROSBAG_RECORD == None:   
-            return JSONResponse(content={'message': 'Stopped RosBag Record'}, status_code=200)
-        kill(ROSBAG_RECORD.pid)
+        return JSONResponse(content={'message': 'No Recording Currently Active'}, status_code=404)
     return JSONResponse(content={'message': 'Stopped RosBag Record'}, status_code=200)
 
 @app.get("/rosbag_list")
