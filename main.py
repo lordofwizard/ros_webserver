@@ -12,7 +12,7 @@ BRINGUP = None
 STARTTCP = None
 USBCAM = None
 ROSBAG = None
-
+ROSBAG_RECORD = None
 def kill(pid):
     os.kill(pid, signal.SIGTERM)  # SIGKILL , SIGTERM
 
@@ -93,9 +93,23 @@ async def robot_bringup():
 
 @app.post("/start_rosbag_record")
 async def start_rosbag_record(file_name: str = Form(...)):
+    global ROSBAG_RECORD
     if not file_name:
         return JSONResponse(content={'error': 'Filename is required'}, status_code=400)
+    if ROSBAG_RECORD is not None:
+        kill(ROSBAG_RECORD.pid)
+        ROSBAG_RECORD = subprocess.popen(["rosbag", "record", "-a", "-O", file_name])
     return JSONResponse(content={'message': 'Starting RosBag Record'}, status_code=200)
+
+@app.get("/stop_rosbag_record")
+async def stop_rosbag_record():
+    global ROSBAG_RECORD
+    if ROSBAG_RECORD is not None:
+        kill(ROSBAG_RECORD.pid)
+        ROSBAG_RECORD = None
+    else:
+        kill(ROSBAG_RECORD.pid)
+    return JSONResponse(content={'message': 'Stopped RosBag Record'}, status_code=200)
 
 @app.get("/rosbag_list")
 async def rosbag_list():
