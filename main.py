@@ -157,8 +157,8 @@ async def rosbag_list():
         return JSONResponse(content=json.dumps({"state": "empty"}), status_code = 200)
     
     # Directory has files
-    files_list = {i+1: file for i, file in enumerate(files)}
-    return JSONResponse(content={"state": "present", "files": files_list}, status_code = 200)
+    #files_list = {i+1: file for i, file in enumerate(files)}
+    return JSONResponse(content={"state": "present", "files": files}, status_code = 200)
 #    return JSONResponse(content={'message': 'Starting RosBag Record'}, status_code=200)
 
 if __name__ == '__main__':
