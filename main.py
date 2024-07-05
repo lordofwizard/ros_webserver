@@ -112,7 +112,9 @@ async def start_rosbag_record(file_name: str = Form(...)):
         return JSONResponse(content={'error': 'Filename is required'}, status_code=400)
     if ROSBAG_RECORD is not None:
         kill(ROSBAG_RECORD.pid)
-        ROSBAG_RECORD = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag record -a -O ./bags/{file_name}.bag"],shell=True, executable="/bin/bash")
+        ROSBAG_RECORD = subprocess.Popen([
+            f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag record -a -O ./bags/{file_name}.bag"
+        ],shell=True, executable="/bin/bash")
     else:
         ROSBAG_RECORD = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag record -a -O ./bags/{file_name}.bag"],shell=True, executable="/bin/bash")
     return JSONResponse(content={'message': 'Starting RosBag Record'}, status_code=200)
@@ -131,7 +133,17 @@ async def stop_rosbag_record():
 
 @app.get("/rosbag_list")
 async def rosbag_list():
-    return JSONResponse(content={'message': 'Starting RosBag Record'}, status_code=200)
+    directory = "bags"
+    if not os.path.exists(directory):
+        return JSONResponse(json.dumps({"state": "absent-dir"}), status_code = 200)
+    files = os.listdir(directory)
+    if not files:
+        return JSONResponse(content=json.dumps(json.dumps({"state": "empty"}), status_code = 200)
+    
+    # Directory has files
+    files_list = {i+1: file for i, file in enumerate(files)}
+    return JSONResponse(content=json.dumps({"state": "present", "files": files_list}, status_code = 200)
+#    return JSONResponse(content={'message': 'Starting RosBag Record'}, status_code=200)
 
 if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=8000, debug=True)
