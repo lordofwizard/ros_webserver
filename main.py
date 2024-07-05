@@ -155,11 +155,7 @@ async def rosbag_list():
     files = os.listdir(directory)
     if not files:
         return JSONResponse(content=json.dumps({"state": "empty"}), status_code = 200)
-    
-    # Directory has files
-    #files_list = {i+1: file for i, file in enumerate(files)}
     return JSONResponse(content={"state": "present", "files": files}, status_code = 200)
-#    return JSONResponse(content={'message': 'Starting RosBag Record'}, status_code=200)
 
 if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=8000, debug=True)
