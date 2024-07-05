@@ -97,9 +97,24 @@ async def robot_bringup():
     global BRINGUP
     if BRINGUP is not None:
         kill(BRINGUP.pid)
-        BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
+        #       BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
+        command = "source /opt/ros/noetic/setup.bash && source /home/tortoisebot/ros1_ws/devel/setup.bash && roslaunch tortoisebot_firmware bringup.launch"
+        BRINGUP = subprocess.Popen([
+            command
+        ],
+        shell=True,
+        executable="/bin/bash")
+
     else:
-        BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
+        #BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
+        kill(BRINGUP.pid)
+        #       BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
+        command = "source /opt/ros/noetic/setup.bash && source /home/tortoisebot/ros1_ws/devel/setup.bash && roslaunch tortoisebot_firmware bringup.launch"
+        BRINGUP = subprocess.Popen([
+            command
+        ],
+        shell=True,
+        executable="/bin/bash")
     return JSONResponse(content={'message': 'Starting Robot Bringup'}, status_code=200)
 
 @app.get("/stop_bringup")
