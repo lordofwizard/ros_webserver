@@ -14,7 +14,7 @@ STARTTCP = None
 USBCAM = None
 ROSBAG = None
 ROSBAG_RECORD = None
-
+ROSCORE = None
 def kill(pid):
     os.kill(pid, signal.SIGTERM)
 
@@ -53,27 +53,32 @@ def kill_roslaunch_processes():
 
 @app.post("/rosbag_play")
 async def rosbag_play(file_name: str = Form(...), speed: Optional[int] = Form(None)):
-    global ROSBAG
+    global ROSBAG,ROSCORE
+
     if not file_name:
         return JSONResponse(content={'error': 'Filename is required'}, status_code=400)
     if ROSBAG is not None:
         return JSONResponse(content={'error': 'already Rosbag Simulation Running'}, status_code=409)
-    elif speed is not None:
+    elif speed is not None and ROSCORE is None:
+        ROSCORE = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && roscore"],shell=True, executable="/bin/bash")
         ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play {file_name} -r {speed}"],shell=True, executable="/bin/bash")
         return JSONResponse(content={'message': f'rosbag play started with rate={speed}:'}, status_code=200)
-    else:
+    if ROSCORE is None:
+        ROSCORE = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && roscore"],shell=True, executable="/bin/bash")
         ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play {file_name}"],shell=True, executable="/bin/bash")
         return JSONResponse(content={'message': 'rosbag play started'}, status_code=200)
     return JSONResponse(content={'message': 'Name received:'}, status_code=200)
 
 @app.get("/stop_rosbag_play")
 async def stop_rosbag_play():
-    global ROSBAG
-    if ROSBAG is not None:
+    global ROSBAG,ROSCORE
+    if ROSBAG is not None and ROSCORE is not None:
+        kill(ROSCORE.pid)
         kill(ROSBAG.pid)
     else:
         return JSONResponse(content={'message': 'No rosbag simulation found'}, status_code=404)
     ROSBAG = None
+    ROSCORE= None
     return JSONResponse(content={'message': 'Stopped rosbag simulation'}, status_code=200)
 
 @app.get("/start_tcp")
