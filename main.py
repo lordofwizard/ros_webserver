@@ -18,11 +18,9 @@ def kill(pid):
     os.kill(pid, signal.SIGTERM)  # SIGKILL , SIGTERM
 
 def start_proc(command: str, package_name: str, launch_file: str) -> subprocess.Popen:
-    command = f"source /opt/ros/noetic/setup.bash && {command}"
+    command = f"source /opt/ros/noetic/setup.bash && {command} {package_name} {launch_file}"
     proc = subprocess.Popen([
-        command,
-        package_name,
-        launch_file,
+        command
     ],
     shell=True,
     executable="/bin/bash")
