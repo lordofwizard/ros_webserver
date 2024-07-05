@@ -15,7 +15,7 @@ ROSBAG = None
 ROSBAG_RECORD = None
 
 def kill(pid):
-    os.kill(pid, signal.SIGTERM)  # SIGKILL , SIGTERM
+    os.kill(pid, signal.SIGTERM)
 
 def start_proc(command: str, package_name: str, launch_file: str) -> subprocess.Popen:
     command = f"source /opt/ros/noetic/setup.bash && source /home/tortoisebot/ros1_ws/devel/setup.bash && {command} {package_name} {launch_file}"
@@ -62,8 +62,7 @@ async def rosbag_play(file_name: str = Form(...), speed: str = Form(...)):
 async def start_tcp():
     global STARTTCP
     if STARTTCP is not None:
-        kill(STARTTCP.pid)
-        STARTTCP = start_proc("roslaunch", "ros_tcp_endpoint", "endpoint.launch")
+        return JSONResponse(content={'message': 'Already TCP End Point Running'}, status_code=409)
     else:
         STARTTCP = start_proc("roslaunch", "ros_tcp_endpoint", "endpoint.launch")
     return JSONResponse(content={'message': 'Starting TCP'}, status_code=200)
@@ -71,7 +70,11 @@ async def start_tcp():
 @app.get("/stop_tcp")
 async def stop_tcp():
     global STARTTCP
-    kill(STARTTCP.pid)
+    if STARTTCP is not None:
+        kill(STARTTCP.pid)
+    else:
+        return JSONResponse(content={'message': 'TCP End Point Not Found'}, status_code=404)
+    STARTTCP = None
     return JSONResponse(content={'message': 'Killed TCP'}, status_code=200)
 
 
@@ -91,8 +94,7 @@ async def stop_usb_cam():
     global USBCAM
     if USBCAM is not None:
         kill(USBCAM.pid)
-    else:
-        kill(USBCAM.pid)
+        USBCAM = None
     return JSONResponse(content={'message': 'Killing USB Cam'}, status_code=200)
 
 @app.get("/robot_bringup")
@@ -101,7 +103,6 @@ async def robot_bringup():
     if BRINGUP is not None:
         kill(BRINGUP.pid)
         BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
-
     else:
         BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
         #kill(BRINGUP.pid)
@@ -116,7 +117,6 @@ async def stop_bringup():
         kill(BRINGUP.pid)
         BRINGUP = None
     else:
-        #kill(BRINGUP.pid)
         pass
     return JSONResponse(content={'message': 'Stopped Robot Bringup'}, status_code=200)
 
