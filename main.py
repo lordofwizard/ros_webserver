@@ -85,24 +85,12 @@ async def robot_bringup():
     global BRINGUP
     if BRINGUP is not None:
         kill(BRINGUP.pid)
-        #       BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
-        command = "source /opt/ros/noetic/setup.bash && source /home/tortoisebot/ros1_ws/devel/setup.bash && roslaunch tortoisebot_firmware bringup.launch"
-        BRINGUP = subprocess.Popen([
-            command
-        ],
-        shell=True,
-        executable="/bin/bash")
+        BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
 
     else:
-        #BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
+        BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
         #kill(BRINGUP.pid)
-        #       BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
-        command = "source /opt/ros/noetic/setup.bash && source /home/tortoisebot/ros1_ws/devel/setup.bash && roslaunch tortoisebot_firmware bringup.launch"
-        BRINGUP = subprocess.Popen([
-            command
-        ],
-        shell=True,
-        executable="/bin/bash")
+        #BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
     return JSONResponse(content={'message': 'Starting Robot Bringup'}, status_code=200)
 
 @app.get("/stop_bringup")
@@ -112,7 +100,8 @@ async def stop_bringup():
         kill(BRINGUP.pid)
         BRINGUP = None
     else:
-        kill(BRINGUP.pid)
+        #kill(BRINGUP.pid)
+        pass
     return JSONResponse(content={'message': 'Stopped Robot Bringup'}, status_code=200)
 
 @app.post("/start_rosbag_record")
@@ -122,7 +111,7 @@ async def start_rosbag_record(file_name: str = Form(...)):
         return JSONResponse(content={'error': 'Filename is required'}, status_code=400)
     if ROSBAG_RECORD is not None:
         kill(ROSBAG_RECORD.pid)
-        ROSBAG_RECORD = subprocess.Popen(["rosbag", "record", "-a", "-O", file_name],shell=True, executable="/bin/bash")
+        ROSBAG_RECORD = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag record -a -O ./bags/{file_name}.bag"],shell=True, executable="/bin/bash")
     return JSONResponse(content={'message': 'Starting RosBag Record'}, status_code=200)
 
 @app.get("/stop_rosbag_record")
