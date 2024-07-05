@@ -106,6 +106,7 @@ async def stop_bringup():
 
 @app.post("/start_rosbag_record")
 async def start_rosbag_record(file_name: str = Form(...)):
+    check_or_create_bags_directory()
     global ROSBAG_RECORD
     if not file_name:
         return JSONResponse(content={'error': 'Filename is required'}, status_code=400)
