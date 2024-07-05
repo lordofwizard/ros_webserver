@@ -62,7 +62,6 @@ async def rosbag_play(file_name: str = Form(...), speed: Optional[int] = Form(No
         return JSONResponse(content={'error': 'already Rosbag Simulation Running'}, status_code=409)
     if os.path.exists("./bags/"+file_name+".bag") == False:
         return JSONResponse(content={'error': f'{file_name}.bag file not found'}, status_code=404)
-
     elif speed is not None:
         #ROSCORE = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && roscore"],shell=True, executable="/bin/bash")
         ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play ./bags/{file_name}.bag -r {speed}"],shell=True, executable="/bin/bash")
@@ -78,7 +77,7 @@ async def rosbag_play(file_name: str = Form(...), speed: Optional[int] = Form(No
 @app.get("/stop_rosbag_play")
 async def stop_rosbag_play():
     global ROSBAG,ROSCORE
-    if ROSBAG is not None and ROSCORE is not None:
+    if ROSBAG is not None:# and ROSCORE is not None:
         #kill(ROSCORE.pid)
         kill(ROSBAG.pid)
     else:
