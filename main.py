@@ -113,6 +113,8 @@ async def start_rosbag_record(file_name: str = Form(...)):
     if ROSBAG_RECORD is not None:
         kill(ROSBAG_RECORD.pid)
         ROSBAG_RECORD = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag record -a -O ./bags/{file_name}.bag"],shell=True, executable="/bin/bash")
+    else:
+        ROSBAG_RECORD = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag record -a -O ./bags/{file_name}.bag"],shell=True, executable="/bin/bash")
     return JSONResponse(content={'message': 'Starting RosBag Record'}, status_code=200)
 
 @app.get("/stop_rosbag_record")
