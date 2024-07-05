@@ -63,13 +63,15 @@ async def rosbag_play(file_name: str = Form(...), speed: Optional[int] = Form(No
     if os.path.exists("./bags/"+file_name+".bag") == False:
         return JSONResponse(content={'error': f'{file_name}.bag file not found'}, status_code=404)
 
-    elif speed is not None and ROSCORE is None:
-        ROSCORE = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && roscore"],shell=True, executable="/bin/bash")
-        ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play ./bags/{file_name} -r {speed}"],shell=True, executable="/bin/bash")
+    elif speed is not None:
+        #ROSCORE = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && roscore"],shell=True, executable="/bin/bash")
+        ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play ./bags/{file_name}.bag -r {speed}"],shell=True, executable="/bin/bash")
         return JSONResponse(content={'message': f'rosbag play started with rate={speed}:'}, status_code=200)
-    if ROSCORE is None:
-        ROSCORE = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && roscore"],shell=True, executable="/bin/bash")
-        ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play ./bags/{file_name}"],shell=True, executable="/bin/bash")
+        #if ROSCORE is None:
+        #ROSCORE = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && roscore"],shell=True, executable="/bin/bash")
+        #ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play ./bags/{file_name}"],shell=True, executable="/bin/bash")
+    else:
+        ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play ./bags/{file_name}.bag"],shell=True, executable="/bin/bash")
         return JSONResponse(content={'message': 'rosbag play started'}, status_code=200)
     return JSONResponse(content={'message': 'Name received:'}, status_code=200)
 
@@ -77,12 +79,12 @@ async def rosbag_play(file_name: str = Form(...), speed: Optional[int] = Form(No
 async def stop_rosbag_play():
     global ROSBAG,ROSCORE
     if ROSBAG is not None and ROSCORE is not None:
-        kill(ROSCORE.pid)
+        #kill(ROSCORE.pid)
         kill(ROSBAG.pid)
     else:
         return JSONResponse(content={'message': 'No rosbag simulation found'}, status_code=404)
     ROSBAG = None
-    ROSCORE= None
+    #ROSCORE= None
     return JSONResponse(content={'message': 'Stopped rosbag simulation'}, status_code=200)
 
 @app.get("/start_tcp")
