@@ -4,7 +4,7 @@ import subprocess
 import os
 import signal
 import uvicorn
-
+import json 
 app = FastAPI()
 
 # GLOBAL PROCESSES
