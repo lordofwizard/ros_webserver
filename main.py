@@ -141,7 +141,7 @@ async def stop_bringup():
     return JSONResponse(content={'message': 'Stopped Robot Bringup'}, status_code=200)
 
 @app.post("/start_rosbag_record")
-async def start_rosbag_record(file_name: str = Form(...)):
+async def start_rosbag_record(file_name: str = Form(...), topics: str = Form(...), ):
     check_or_create_bags_directory()
     global ROSBAG_RECORD,BRINGUP
     if not file_name:
@@ -152,9 +152,9 @@ async def start_rosbag_record(file_name: str = Form(...)):
         return JSONResponse(content={'error': 'Recording Already Running'}, status_code=409)
     else:
         if BRINGUP is not None:
-            ROSBAG_RECORD = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag record -a -O ./bags/{file_name}.bag"],shell=True, executable="/bin/bash")
+            ROSBAG_RECORD = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag record -a -O ./bags/{file_name}.bag {topics}"],shell=True, executable="/bin/bash")
         else:
-            return JSONResponse(content={'message': 'No ROSCORE found'}, status_code=404)
+            return JSONResponse(content={'message': 'No Bringup Running found'}, status_code=404)
     return JSONResponse(content={'message': 'Starting RosBag Record'}, status_code=200)
 
 @app.get("/stop_rosbag_record")
