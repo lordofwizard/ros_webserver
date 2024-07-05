@@ -17,8 +17,8 @@ ROSBAG_RECORD = None
 def kill(pid):
     os.kill(pid, signal.SIGTERM)  # SIGKILL , SIGTERM
 
-def start_proc(command: str, package_name: str, launch_file: str) -> subprocess.Popen:
-    proc = subprocess.Popen([
+def start_proc(command: str, package_name: str, launch_file: str) -> subprocess.run:
+    proc = subprocess.run([
         "source",
         "/opt/ros/neotic/setup.bash",
         "&&",
@@ -113,7 +113,7 @@ async def start_rosbag_record(file_name: str = Form(...)):
         return JSONResponse(content={'error': 'Filename is required'}, status_code=400)
     if ROSBAG_RECORD is not None:
         kill(ROSBAG_RECORD.pid)
-        ROSBAG_RECORD = subprocess.popen(["rosbag", "record", "-a", "-O", file_name],shell=True, shell_path="/bin/bash")
+        ROSBAG_RECORD = subprocess.run(["rosbag", "record", "-a", "-O", file_name],shell=True, shell_path="/bin/bash")
     return JSONResponse(content={'message': 'Starting RosBag Record'}, status_code=200)
 
 @app.get("/stop_rosbag_record")
