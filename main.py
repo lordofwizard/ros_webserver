@@ -107,7 +107,7 @@ async def robot_bringup():
 
     else:
         #BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
-        kill(BRINGUP.pid)
+        #kill(BRINGUP.pid)
         #       BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
         command = "source /opt/ros/noetic/setup.bash && source /home/tortoisebot/ros1_ws/devel/setup.bash && roslaunch tortoisebot_firmware bringup.launch"
         BRINGUP = subprocess.Popen([
