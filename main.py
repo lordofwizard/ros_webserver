@@ -51,11 +51,18 @@ def kill_roslaunch_processes():
 
 
 @app.post("/rosbag_play")
-async def rosbag_play(file_name: str = Form(...), speed: str = Form(...)):
+async def rosbag_play(file_name: str = Form(...), speed: Optional[int] = Form(None)):
+    global ROSBAG
     if not file_name:
         return JSONResponse(content={'error': 'Filename is required'}, status_code=400)
-    if not speed:
-        return JSONResponse(content={'error': 'Speed is required'}, status_code=400)
+    if ROSBAG is not None:
+        return JSONResponse(content={'error': 'already Rosbag Simulation Running'}, status_code=409)
+    elif speed not None:
+        ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play {file_name} -r {speed}"],shell=True, executable="/bin/bash")
+        return JSONResponse(content={'message': f'rosbag play started with rate={speed}:'}, status_code=200)
+    else:
+        ROSBAG = subprocess.Popen([f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag play {file_name}"],shell=True, executable="/bin/bash")
+        return JSONResponse(content={'message': 'rosbag play started'}, status_code=200)
     return JSONResponse(content={'message': 'Name received:'}, status_code=200)
 
 @app.get("/start_tcp")
@@ -82,7 +89,6 @@ async def stop_tcp():
 async def usb_cam():
     global USBCAM
     if USBCAM is not None:
-        #USBCAM = start_proc("roslaunch", "usb_cam", "2_usb_cam.launch")
         return JSONResponse(content={'message':'USB Cam Process found, stop already running process'}, status_code=409)
     else:
         USBCAM = start_proc("roslaunch", "usb_cam", "2_usb_cam.launch")
@@ -104,7 +110,6 @@ async def stop_usb_cam():
 async def robot_bringup():
     global BRINGUP
     if BRINGUP is not None:
-        #BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
         return JSONResponse(content={'message': 'Bringup already running'}, status_code=409)
     else:
         BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
@@ -130,10 +135,6 @@ async def start_rosbag_record(file_name: str = Form(...)):
     if os.path.exists("./bags/"+file_name+".bag"):
         return JSONResponse(content={'error': 'File already present'}, status_code=409)
     if ROSBAG_RECORD is not None:
-        #kill(ROSBAG_RECORD.pid)
-        #ROSBAG_RECORD = subprocess.Popen([
-        #    f"source /opt/ros/noetic/setup.bash && source ~/ros1_ws/devel/setup.bash && rosbag record -a -O ./bags/{file_name}.bag"
-        #],shell=True, executable="/bin/bash")
         return JSONResponse(content={'error': 'Recording Already Running'}, status_code=409)
     else:
         if BRINGUP is not None:
