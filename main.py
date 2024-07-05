@@ -82,9 +82,10 @@ async def stop_tcp():
 async def usb_cam():
     global USBCAM
     if USBCAM is not None:
-        kill(USBCAM.pid)
-        USBCAM = start_proc("roslaunch", "usb_cam", "2_usb_cam.launch")
+        #USBCAM = start_proc("roslaunch", "usb_cam", "2_usb_cam.launch")
+        return JSONResponse(content={'message':'USB Cam Process found, stop already running process'}, status_code=409)
     else:
+        USBCAM = start_proc("roslaunch", "usb_cam", "2_usb_cam.launch")
         return JSONResponse(content={'message':'No Camera Process found'}, status_code=404)
     return JSONResponse(content={'message': 'Starting USB Cam'}, status_code=200)
 
@@ -103,12 +104,10 @@ async def stop_usb_cam():
 async def robot_bringup():
     global BRINGUP
     if BRINGUP is not None:
-        kill(BRINGUP.pid)
-        BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
+        #BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
+        return JSONResponse(content={'message': 'Bringup already running'}, status_code=409)
     else:
         BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
-        #kill(BRINGUP.pid)
-        #BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
     return JSONResponse(content={'message': 'Starting Robot Bringup'}, status_code=200)
 
 @app.get("/stop_bringup")
@@ -119,7 +118,7 @@ async def stop_bringup():
         kill(BRINGUP.pid)
         BRINGUP = None
     else:
-        pass
+        return JSONResponse(content={'message': 'Bringup Process Not found'}, status_code=404)
     return JSONResponse(content={'message': 'Stopped Robot Bringup'}, status_code=200)
 
 @app.post("/start_rosbag_record")
