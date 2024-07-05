@@ -151,10 +151,10 @@ async def stop_rosbag_record():
 async def rosbag_list():
     directory = "bags"
     if not os.path.exists(directory):
-        return JSONResponse(json.dumps({"state": "absent-dir"}), status_code = 200)
+        return JSONResponse(content=json.dumps({"state": "absent-dir"}), status_code = 200)
     files = os.listdir(directory)
     if not files:
-        return JSONResponse(content=json.dumps(json.dumps({"state": "empty"}), status_code = 200))
+        return JSONResponse(content=json.dumps({"state": "empty"}), status_code = 200)
     
     # Directory has files
     files_list = {i+1: file for i, file in enumerate(files)}
