@@ -102,6 +102,15 @@ async def robot_bringup():
         BRINGUP = start_proc("roslaunch", "tortoisebot_firmware", "bringup.launch")
     return JSONResponse(content={'message': 'Starting Robot Bringup'}, status_code=200)
 
+@app.get("/stop_bringup")
+async def stop_bringup():
+    global BRINGUP
+    if BRINGUP is not None:
+        kill(BRINGUP.pid)
+    else:
+        kill(BRINGUP.pid)
+    return JSONResponse(content={'message': 'Stopped Robot Bringup'}, status_code=200)
+
 @app.post("/start_rosbag_record")
 async def start_rosbag_record(file_name: str = Form(...)):
     global ROSBAG_RECORD
