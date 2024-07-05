@@ -35,18 +35,6 @@ def check_or_create_bags_directory():
         print(f"Directory for Bags already '{directory}' already exists.")
 
 
-@app.get("/save_rosbag")
-async def save_rosbag():
-    ROSBAG = start_proc("roslaunch", "rosbag", "rosbag.launch")
-    return JSONResponse(content={'message': "RosBag Save Starting" }, status_code=200)
-
-
-@app.get("/stop_rosbag")
-async def stop_rosbag():
-    global ROSBAG
-    kill(ROSBAG.pid)
-    return JSONResponse(content={'message': "Killed ROSBAG Thing" }, status_code=200)
-
 @app.post("/rosbag_play")
 async def rosbag_play(file_name: str = Form(...), speed: str = Form(...)):
     if not file_name:
@@ -122,6 +110,7 @@ async def stop_bringup():
     global BRINGUP
     if BRINGUP is not None:
         kill(BRINGUP.pid)
+        BRINGUP = None
     else:
         kill(BRINGUP.pid)
     return JSONResponse(content={'message': 'Stopped Robot Bringup'}, status_code=200)
