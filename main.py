@@ -106,7 +106,7 @@ async def usb_cam():
         return JSONResponse(content={'message':'USB Cam Process found, stop already running process'}, status_code=409)
     else:
         USBCAM = start_proc("roslaunch", "usb_cam", "2_usb_cam.launch")
-        return JSONResponse(content={'message':'No Camera Process found'}, status_code=404)
+        #return JSONResponse(content={'message':'No Camera Process found'}, status_code=404)
     return JSONResponse(content={'message': 'Starting USB Cam'}, status_code=200)
 
 
