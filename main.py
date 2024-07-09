@@ -133,7 +133,7 @@ async def robot_bringup():
 async def stop_bringup():
     global BRINGUP
     if BRINGUP is not None:
-        kill_roslaunch_processes()
+        #kill_roslaunch_processes()
         kill(BRINGUP.pid)
         BRINGUP = None
     else:
