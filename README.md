@@ -14,6 +14,5 @@ Now you can work on your FastAPI project within the isolated virtual environment
 
 ```bash
 cd ros_webserver
-pyenv activate fastapi-env
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
