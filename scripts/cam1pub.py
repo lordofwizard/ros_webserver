@@ -11,10 +11,9 @@ import time
 import struct
 import threading
 import yaml
-import os
-os.chdir("..")
 
-config_file_path = "config.yaml"
+
+config_file_path = sys.argv[1]
 config = ""
 
 with open(config_file_path, 'r') as file:

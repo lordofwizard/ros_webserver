@@ -36,7 +36,7 @@ def start_cams():
     global processes
     find_python_files(scripts_directory)
     for python_file in python_files:
-        process = subprocess.Popen(f'source {config["ros"]["ros_setup"]} && source {config["ros"]["workspace_setup"]} && python3 {python_file}', shell=True, executable='/bin/bash')
+        process = subprocess.Popen(f'source {config["ros"]["ros_setup"]} && source {config["ros"]["workspace_setup"]} && python3 {python_file} {os.getcwd() + "/" + config_file_path}', shell=True, executable='/bin/bash')
         processes.append(process)
 
 def kill_cams():
