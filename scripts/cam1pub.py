@@ -10,6 +10,16 @@ import socket
 import time
 import struct
 import threading
+import yaml
+
+
+config_file_path = "../config.yaml"
+config = ""
+
+with open(config_file_path, 'r') as file:
+    config = yaml.safe_load(file)
+
+topic_name = config["topics"]["topic1_name"]
 
 PORT = 9050
 BUFFER_SIZE = 8 * 1000
@@ -94,9 +104,9 @@ if __name__=="__main__":
     t1.start()
     bridge = CvBridge()
     rospy.init_node("image_subscriber", anonymous=True)
-    print("Subscribe images from topic usb_cam1/image_raw ...")
+    print(f"Subscribe images from topic {topic_name} ...")
 
-    image_subcriber = rospy.Subscriber("usb_cam1/image_raw", Image, callback)
+    image_subcriber = rospy.Subscriber(topic_name, Image, callback)
 
     try:
         # spin() simply keeps python from exiting until this node is stopped

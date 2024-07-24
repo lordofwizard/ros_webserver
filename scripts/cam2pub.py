@@ -23,6 +23,14 @@ last_received_time = time.time()
 frame_count=0
 dim = (1080,720)
 
+config_file_path = "../config.yaml"
+config = ""
+
+with open(config_file_path, 'r') as file:
+    config = yaml.safe_load(file)
+
+topic_name = config["topics"]["topic2_name"]
+
 
 
 def callback(image_msg):
@@ -94,9 +102,9 @@ if __name__=="__main__":
     t1.start()
     bridge = CvBridge()
     rospy.init_node("image_subscriber", anonymous=True)
-    print("Subscribe images from topic usb_cam2/image_raw ...")
+    print(f"Subscribe images from topic {config["topics"]["topic2_name"]} ...")
 
-    image_subcriber = rospy.Subscriber("usb_cam2/image_raw", Image, callback)
+    image_subcriber = rospy.Subscriber(config["topics"]["topic2_name"], Image, callback)
 
     try:
         # spin() simply keeps python from exiting until this node is stopped

@@ -17,3 +17,7 @@ bringup:
   package_name : "tortoisebot_firmware"
   launch_file : "bringup.launch"
 
+topics:
+  topic1_name : "usb_cam1/image_raw"
+  topic2_name : "usb_cam2/image_raw"
+
