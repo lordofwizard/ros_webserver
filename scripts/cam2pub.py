@@ -10,6 +10,8 @@ import socket
 import time
 import struct
 import threading
+import os
+os.chdir("..")
 
 PORT = 9051
 BUFFER_SIZE = 8 * 1000
@@ -23,7 +25,7 @@ last_received_time = time.time()
 frame_count=0
 dim = (1080,720)
 
-config_file_path = "../config.yaml"
+config_file_path = "config.yaml"
 config = ""
 
 with open(config_file_path, 'r') as file:
