@@ -73,7 +73,7 @@ async def rosbag_play(file_name: str = Form(...), speed: Optional[int] = Form(No
     if os.path.exists("./bags/"+file_name+".bag") == False:
         return JSONResponse(content={'error': f'{file_name}.bag file not found'}, status_code=404)
     elif speed is not None:
-        ROSBAG = subprocess.Popen([f'source {config["ros"]["ros_setup"]} && source {config["ros"]["workspace_setup"]} && rosbag play ./bags/{file_name}.bag -r {speed}"],shell=True, executable="/bin/bash')
+        ROSBAG = subprocess.Popen([f'source {config["ros"]["ros_setup"]} && source {config["ros"]["workspace_setup"]} && rosbag play ./bags/{file_name}.bag -r {speed}'],shell=True, executable="/bin/bash")
         return JSONResponse(content={'message': f'rosbag play started with rate={speed}:'}, status_code=200)
     else:
         ROSBAG = subprocess.Popen([f'source {config["ros"]["ros_setup"]} && source {config["ros"]["workspace_setup"]} && rosbag play ./bags/{file_name}.bag'],shell=True, executable="/bin/bash")
