@@ -1,0 +1,19 @@
+ros:
+  ros_setup: "/opt/ros/noetic/setup.bash"
+  workspace_setup: "/home/tortoisebot/ros1_ws/devel/setup.bash"
+
+rosbag:
+  save_directory: "bags"
+
+start_tcp:
+  package_name : "ros_tcp_endpoint"
+  launch_file : "endpoint.launch"
+
+usb_cam:
+  package_name : "usb_cam"
+  launch_file : "2_usb_cam.launch"
+
+bringup:
+  package_name : "tortoisebot_firmware"
+  launch_file : "bringup.launch"
+
