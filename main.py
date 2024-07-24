@@ -22,17 +22,19 @@ processes = []
 def find_python_files(directory):
     """Populate the global list with all Python files in the given directory."""
     global python_files
+    python_files.clear()
     for root, _, files in os.walk(directory):
         for file in files:
             if file.endswith('.py'):
                 python_files.append(os.path.join(root, file))
 
 scripts_directory = 'scripts'  # Define the scripts directory
-find_python_files(scripts_directory)  # Populate the global list
+  # Populate the global list
 
 def start_cams():
     """Start all Python files found in the scripts directory using subprocess.Popen."""
     global processes
+    find_python_files(scripts_directory)
     print(f"length of ps start = {len(processes)}")
     for python_file in python_files:
         process = subprocess.Popen(f'source {config["ros"]["ros_setup"]} && source {config["ros"]["workspace_setup"]} && python3 {python_file}', shell=True, executable='/bin/bash')
