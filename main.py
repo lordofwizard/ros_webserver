@@ -16,6 +16,44 @@ USBCAM = None
 ROSBAG = None
 ROSBAG_RECORD = None
 
+python_files = []
+processes = []
+
+def start_cams():
+    """Start all Python files found in the scripts directory using subprocess.Popen."""
+    global processes
+    scripts_directory = 'scripts'  # Define the scripts directory
+    find_python_files(scripts_directory)  # Populate the global list
+
+    for python_file in python_files:
+        process = subprocess.Popen(f'python3 {python_file}', shell=True, executable='/bin/bash')
+        processes.append(process)
+
+def kill_cams():
+    """Kill all processes started by the start function using their PIDs."""
+    global processes
+    for process in processes:
+        try:
+            os.kill(process.pid, signal.SIGTERM)
+        except OSError as e:
+            print(f"Error killing process {process.pid}: {e}")
+
+def find_python_files(directory):
+    """Populate the global list with all Python files in the given directory."""
+    global python_files
+    for root, _, files in os.walk(directory):
+        for file in files:
+            if file.endswith('.py'):
+                python_files.append(os.path.join(root, file))
+
+def find_python_files(directory):
+    """Populate the global list with all Python files in the given directory."""
+    global python_files
+    for root, _, files in os.walk(directory):
+        for file in files:
+            if file.endswith('.py'):
+                python_files.append(os.path.join(root, file))
+
 config_file_path = "config.yaml"
 config = ""
 
@@ -112,23 +150,29 @@ async def stop_tcp():
 
 @app.get("/usb_cam")
 async def usb_cam():
-    global USBCAM
-    if USBCAM is not None:
-        return JSONResponse(content={'message':'USB Cam Process found, stop already running process'}, status_code=409)
-    else:
-        USBCAM = start_proc("roslaunch", config["usb_cam"]["package_name"], config["usb_cam"]["launch_file"])
-        #return JSONResponse(content={'message':'No Camera Process found'}, status_code=404)
+    #global USBCAM
+    #if USBCAM is not None:
+    #    return JSONResponse(content={'message':'USB Cam Process found, stop already running process'}, status_code=409)
+    #else:
+    #    USBCAM = start_proc("roslaunch", config["usb_cam"]["package_name"], config["usb_cam"]["launch_file"])
+    #    #return JSONResponse(content={'message':'No Camera Process found'}, status_code=404)
+    #eturn JSONResponse(content={'message': 'Starting USB Cam'}, status_code=200)
     return JSONResponse(content={'message': 'Starting USB Cam'}, status_code=200)
+    start_cams()
 
 
 @app.get("/stop_usb_cam")
 async def stop_usb_cam():
-    global USBCAM
-    if USBCAM is not None:
-        kill(USBCAM.pid)
-        USBCAM = None
-    else:
-        return JSONResponse(content={'message':'No Camera Process found'}, status_code=404)
+    #global USBCAM
+    #if USBCAM is not None:
+    #    kill(USBCAM.pid)
+    #    USBCAM = None
+    #else:
+    #    return JSONResponse(content={'message':'No Camera Process found'}, status_code=404)
+    #return JSONResponse(content={'message': 'Killing USB Cam'}, status_code=200)
+    kill_cams()
+    global processes
+    processes = []
     return JSONResponse(content={'message': 'Killing USB Cam'}, status_code=200)
 
 @app.get("/robot_bringup")
