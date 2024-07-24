@@ -28,7 +28,7 @@ def kill(pid):
     os.kill(pid, signal.SIGTERM)
 
 def start_proc(command: str, package_name: str, launch_file: str) -> subprocess.Popen:
-    command = f"source {config["ros"]["ros_setup"]} && source {config["ros"]["workspace_setup"]} && {command} {package_name} {launch_file}"
+    command = f'source {config["ros"]["ros_setup"]} && source {config["ros"]["workspace_setup"]} && {command} {package_name} {launch_file}'
     proc = subprocess.Popen([
         command
     ],
@@ -73,10 +73,10 @@ async def rosbag_play(file_name: str = Form(...), speed: Optional[int] = Form(No
     if os.path.exists("./bags/"+file_name+".bag") == False:
         return JSONResponse(content={'error': f'{file_name}.bag file not found'}, status_code=404)
     elif speed is not None:
-        ROSBAG = subprocess.Popen([f"source {config["ros"]["ros_setup"]} && source {config["ros"]["workspace_setup"]} && rosbag play ./bags/{file_name}.bag -r {speed}"],shell=True, executable="/bin/bash")
+        ROSBAG = subprocess.Popen([f'source {config["ros"]["ros_setup"]} && source {config["ros"]["workspace_setup"]} && rosbag play ./bags/{file_name}.bag -r {speed}"],shell=True, executable="/bin/bash')
         return JSONResponse(content={'message': f'rosbag play started with rate={speed}:'}, status_code=200)
     else:
-        ROSBAG = subprocess.Popen([f"source {config["ros"]["ros_setup"]} && source {config["ros"]["workspace_setup"]} && rosbag play ./bags/{file_name}.bag"],shell=True, executable="/bin/bash")
+        ROSBAG = subprocess.Popen([f'source {config["ros"]["ros_setup"]} && source {config["ros"]["workspace_setup"]} && rosbag play ./bags/{file_name}.bag'],shell=True, executable="/bin/bash")
         return JSONResponse(content={'message': 'rosbag play started'}, status_code=200)
     return JSONResponse(content={'message': 'Name received:'}, status_code=200)
 
@@ -163,7 +163,7 @@ async def start_rosbag_record(file_name: str = Form(...), topics: str = Form(...
         return JSONResponse(content={'error': 'Recording Already Running'}, status_code=409)
     else:
         if BRINGUP is not None:
-            ROSBAG_RECORD = subprocess.Popen([f"source {config["ros"]["ros_setup"]} && source {config["ros"]["workspace_setup"]} && rosbag record -a -O ./bags/{file_name}.bag {topics}"],shell=True, executable="/bin/bash")
+            ROSBAG_RECORD = subprocess.Popen([f'source {config["ros"]["ros_setup"]} && source {config["ros"]["workspace_setup"]} && rosbag record -a -O ./bags/{file_name}.bag {topics}'],shell=True, executable="/bin/bash")
         else:
             return JSONResponse(content={'message': 'No Bringup Running found'}, status_code=404)
     return JSONResponse(content={'message': 'Starting RosBag Record'}, status_code=200)
