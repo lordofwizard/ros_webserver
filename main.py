@@ -35,16 +35,13 @@ def start_cams():
     """Start all Python files found in the scripts directory using subprocess.Popen."""
     global processes
     find_python_files(scripts_directory)
-    print(f"length of ps start = {len(processes)}")
     for python_file in python_files:
         process = subprocess.Popen(f'source {config["ros"]["ros_setup"]} && source {config["ros"]["workspace_setup"]} && python3 {python_file}', shell=True, executable='/bin/bash')
         processes.append(process)
-    print(f"length of ps after = {len(processes)}")
 
 def kill_cams():
     """Kill all processes started by the start function using their PIDs."""
     global processes
-    print(f"length of ps before killing = {len(processes)}")
     for process in processes:
         try:
             os.kill(process.pid, signal.SIGKILL)
@@ -53,7 +50,6 @@ def kill_cams():
         except OSError as e:
             print(f"Error killing process {process.pid}: {e}")
     processes.clear()
-    print(f"length of ps after killing= {len(processes)}")
 
 
 
