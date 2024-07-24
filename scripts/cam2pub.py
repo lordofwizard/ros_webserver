@@ -102,9 +102,9 @@ if __name__=="__main__":
     t1.start()
     bridge = CvBridge()
     rospy.init_node("image_subscriber", anonymous=True)
-    print(f"Subscribe images from topic {config["topics"]["topic2_name"]} ...")
+    print(f'Subscribe images from topic {topic_name} ...')
 
-    image_subcriber = rospy.Subscriber(config["topics"]["topic2_name"], Image, callback)
+    image_subcriber = rospy.Subscriber(topic_name, Image, callback)
 
     try:
         # spin() simply keeps python from exiting until this node is stopped
